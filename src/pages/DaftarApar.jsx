@@ -14,7 +14,7 @@ export default function DaftarApar() {
   const pendingItemsRef = useRef([]);
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current,
+    contentRef: printRef,
     documentTitle: "QR-APAR",
     onBeforeGetContent: () =>
       new Promise((resolve) => {

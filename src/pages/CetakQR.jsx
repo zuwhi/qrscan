@@ -32,7 +32,7 @@ export default function CetakQR() {
   }, []);
 
   const handlePrint = useReactToPrint({
-    content: () => gridRef.current,
+    contentRef: gridRef,
     documentTitle: "QR-APAR",
   });
 
