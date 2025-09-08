@@ -43,10 +43,10 @@ export default function CetakQR() {
   }, [apars, query]);
 
   return (
-    <div>
+    <div style={{ maxWidth: 1200, margin: "0 auto" }}>
       <h2>Cetak QR</h2>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", margin: "8px 0" }}>
-        <input placeholder="Cari..." value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, width: 240 }} />
+        <input placeholder="Cari..." value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, width: 240, maxWidth: "100%" }} />
       </div>
 
       <div ref={gridRef}>

@@ -52,7 +52,7 @@ export default function DaftarApar() {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-    <div>
+    <div style={{ maxWidth: 1200, margin: "0 auto" }}>
       <h2 style={{ marginTop: 0 }}>Daftar APAR</h2>
       <input placeholder="Cari nomor/lokasi/kondisi/tanggal" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, margin: "8px 0", width: "100%", maxWidth: 420 }} />
 

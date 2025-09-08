@@ -7,8 +7,15 @@ export default function ScanQR() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [cameraError, setCameraError] = useState("");
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 900 : true);
   const qrRef = useRef(null);
   const scannerRef = useRef(null);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     fetchAparList()
@@ -61,11 +68,14 @@ export default function ScanQR() {
     return apars.find((a) => String(a.nomor).trim() === nomor) || null;
   }, [result, apars]);
 
+  const gridColumns = isMobile ? "1fr" : "1fr 1fr";
+  const cameraHeight = isMobile ? "360px" : "calc(100vh - 240px)";
+
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: 0 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "stretch" }}>
-        <div style={{ padding: 16 }}>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>Scan QR</h2>
+      <div style={{ display: "grid", gridTemplateColumns: gridColumns, gap: 24, alignItems: "stretch" }}>
+        <div style={{ padding: isMobile ? 12 : 16 }}>
+          <h2 style={{ margin: 0, fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>Scan QR</h2>
           <p style={{ margin: "8px 0 16px", color: "#555" }}>Arahkan kamera ke QR APAR. Sistem akan otomatis membaca nomor.</p>
           <div
             style={{
@@ -73,8 +83,8 @@ export default function ScanQR() {
               border: "1px solid #e5e7eb",
               borderRadius: 12,
               boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
-              padding: 16,
-              height: "calc(100vh - 240px)",
+              padding: isMobile ? 12 : 16,
+              height: cameraHeight,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -89,8 +99,8 @@ export default function ScanQR() {
             )}
           </div>
         </div>
-        <div style={{ padding: 16 }}>
-          <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Hasil & Detail</h3>
+        <div style={{ padding: isMobile ? 12 : 16 }}>
+          <h3 style={{ margin: 0, fontSize: isMobile ? 18 : 20, fontWeight: 700 }}>Hasil & Detail</h3>
           <div
             style={{
               marginTop: 16,
@@ -121,7 +131,7 @@ export default function ScanQR() {
                 }}
               >
                 <div style={{ fontSize: 14, color: "#0e7490", marginBottom: 6 }}>Detail APAR</div>
-                <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", rowGap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "120px 1fr", rowGap: 6, columnGap: 12 }}>
                   <div style={{ color: "#334155" }}>Nomor</div>
                   <div style={{ fontWeight: 600 }}>{matched.nomor}</div>
                   <div style={{ color: "#334155" }}>Lokasi</div>
