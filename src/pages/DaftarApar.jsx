@@ -53,10 +53,10 @@ export default function DaftarApar() {
 
   return (
     <div>
-      <h2>Daftar APAR</h2>
+      <h2 style={{ marginTop: 0 }}>Daftar APAR</h2>
       <input placeholder="Cari nomor/lokasi/kondisi/tanggal" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, margin: "8px 0", width: "100%", maxWidth: 420 }} />
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0" }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0", flexWrap: "wrap" }}>
         <button
           onClick={() => {
             const items = apars.filter((a) => selected.includes(a.nomor));
@@ -74,10 +74,10 @@ export default function DaftarApar() {
       </div>
 
       <div style={{ overflowX: "auto" }}>
-        <table>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>
                 <input
                   type="checkbox"
                   checked={selected.length > 0 && filtered.every((a) => selected.includes(a.nomor))}
@@ -87,17 +87,17 @@ export default function DaftarApar() {
                   }}
                 />
               </th>
-              <th>Nomor</th>
-              <th>Lokasi</th>
-              <th>Kondisi</th>
-              <th>Tanggal</th>
-              <th>Aksi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Nomor</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Lokasi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Kondisi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Tanggal</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((a, idx) => (
               <tr key={idx}>
-                <td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>
                   <input
                     type="checkbox"
                     checked={selected.includes(a.nomor)}
@@ -106,11 +106,11 @@ export default function DaftarApar() {
                     }}
                   />
                 </td>
-                <td>{a.nomor}</td>
-                <td>{a.lokasi}</td>
-                <td>{a.kondisi}</td>
-                <td>{a.tanggal}</td>
-                <td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.nomor}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.lokasi}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.kondisi}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.tanggal}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>
                   <button
                     onClick={() => {
                       setPrintItems([a]);
