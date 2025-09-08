@@ -8,6 +8,7 @@ export default function ScanQR() {
   const [error, setError] = useState("");
   const [cameraError, setCameraError] = useState("");
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 900 : true);
+  const [showResult, setShowResult] = useState(false);
   const qrRef = useRef(null);
   const scannerRef = useRef(null);
 
@@ -34,7 +35,10 @@ export default function ScanQR() {
       .start(
         { facingMode: "environment" },
         config,
-        (decodedText) => setResult(decodedText),
+        (decodedText) => {
+          setResult(decodedText);
+          setShowResult(true);
+        },
         () => {}
       )
       .catch(() => {
@@ -45,7 +49,10 @@ export default function ScanQR() {
             return html5QrCode.start(
               backPreferred.id,
               config,
-              (decodedText) => setResult(decodedText),
+              (decodedText) => {
+                setResult(decodedText);
+                setShowResult(true);
+              },
               () => {}
             );
           })
@@ -112,31 +119,69 @@ export default function ScanQR() {
             <div style={{ fontSize: 18, fontWeight: 700 }}>{result || "-"}</div>
           </div>
 
-          {matched ? (
-            <div
-              style={{
-                marginTop: 12,
-                background: "#ffffff",
-                border: "1px solid #93c5fd",
-                borderRadius: 10,
-                padding: 12,
-              }}
-            >
-              <div style={{ fontSize: 14, color: "#1d4ed8", marginBottom: 6 }}>Detail APAR</div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "120px 1fr", rowGap: 6, columnGap: 12 }}>
-                <div>Nomor</div>
-                <div style={{ fontWeight: 600 }}>{matched.nomor}</div>
-                <div>Lokasi</div>
-                <div style={{ fontWeight: 600 }}>{matched.lokasi}</div>
-                <div>Kondisi</div>
-                <div style={{ fontWeight: 600 }}>{matched.kondisi}</div>
-                <div>Tanggal</div>
-                <div style={{ fontWeight: 600 }}>{matched.tanggal}</div>
+          {showResult &&
+            (matched ? (
+              <div
+                style={{
+                  marginTop: 12,
+                  background: "#ffffff",
+                  border: "1px solid #93c5fd",
+                  borderRadius: 10,
+                  padding: 12,
+                  position: "relative",
+                }}
+              >
+                <button
+                  onClick={() => setShowResult(false)}
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    background: "#ef4444",
+                    color: "#ffffff",
+                    border: 0,
+                    borderRadius: 4,
+                    padding: "4px 8px",
+                    fontSize: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  ✕
+                </button>
+                <div style={{ fontSize: 14, color: "#1d4ed8", marginBottom: 6 }}>Detail APAR</div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "120px 1fr", rowGap: 6, columnGap: 12 }}>
+                  <div>Nomor</div>
+                  <div style={{ fontWeight: 600 }}>{matched.nomor}</div>
+                  <div>Lokasi</div>
+                  <div style={{ fontWeight: 600 }}>{matched.lokasi}</div>
+                  <div>Kondisi</div>
+                  <div style={{ fontWeight: 600 }}>{matched.kondisi}</div>
+                  <div>Tanggal</div>
+                  <div style={{ fontWeight: 600 }}>{matched.tanggal}</div>
+                </div>
               </div>
-            </div>
-          ) : result ? (
-            <div style={{ marginTop: 12, color: "#0b1220", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 10, padding: 12 }}>APAR tidak ditemukan untuk nomor tersebut.</div>
-          ) : null}
+            ) : result ? (
+              <div style={{ marginTop: 12, color: "#0b1220", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 10, padding: 12, position: "relative" }}>
+                <button
+                  onClick={() => setShowResult(false)}
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    background: "#ef4444",
+                    color: "#ffffff",
+                    border: 0,
+                    borderRadius: 4,
+                    padding: "4px 8px",
+                    fontSize: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  ✕
+                </button>
+                APAR tidak ditemukan untuk nomor tersebut.
+              </div>
+            ) : null)}
 
           {error && <div style={{ marginTop: 12, color: "#ef4444", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 10, padding: 12 }}>{error}</div>}
         </div>
