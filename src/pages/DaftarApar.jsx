@@ -11,16 +11,10 @@ export default function DaftarApar() {
   const [selected, setSelected] = useState([]); // array of nomor
   const [printItems, setPrintItems] = useState([]);
   const printRef = useRef(null);
-  const pendingItemsRef = useRef([]);
 
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: "QR-APAR",
-    onBeforeGetContent: () =>
-      new Promise((resolve) => {
-        setPrintItems(pendingItemsRef.current);
-        setTimeout(resolve, 0);
-      }),
   });
 
   useEffect(() => {
@@ -49,6 +43,18 @@ export default function DaftarApar() {
     return apars.filter((a) => [a.nomor, a.lokasi, a.kondisi, a.tanggal].some((v) => (v || "").toLowerCase().includes(q)));
   }, [apars, query]);
 
+  const handlePrintSelected = () => {
+    const items = apars.filter((a) => selected.includes(a.nomor));
+    if (items.length === 0) return;
+    setPrintItems(items);
+    setTimeout(() => handlePrint(), 100);
+  };
+
+  const handlePrintSingle = (item) => {
+    setPrintItems([item]);
+    setTimeout(() => handlePrint(), 100);
+  };
+
   if (loading) return <div>Memuat...</div>;
   if (error) return <div style={{ color: "#ef4444" }}>{error}</div>;
 
@@ -58,15 +64,7 @@ export default function DaftarApar() {
       <input placeholder="Cari nomor/lokasi/kondisi/tanggal" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, margin: "8px 0", width: "100%", maxWidth: 420, border: "1px solid #bfdbfe", borderRadius: 8 }} />
 
       <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0", flexWrap: "wrap" }}>
-        <button
-          onClick={() => {
-            const items = apars.filter((a) => selected.includes(a.nomor));
-            if (items.length === 0) return;
-            pendingItemsRef.current = items;
-            handlePrint();
-          }}
-          style={{ padding: "6px 10px", background: "#1d4ed8", color: "#ffffff", border: 0, borderRadius: 8 }}
-        >
+        <button onClick={handlePrintSelected} style={{ padding: "6px 10px", background: "#1d4ed8", color: "#ffffff", border: 0, borderRadius: 8 }}>
           Cetak QR Terpilih
         </button>
         <button onClick={() => setSelected([])} style={{ padding: "6px 10px", background: "#e5e7eb", color: "#0b1220", border: 0, borderRadius: 8 }}>
@@ -113,13 +111,7 @@ export default function DaftarApar() {
                 <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.kondisi}</td>
                 <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.tanggal}</td>
                 <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb" }}>
-                  <button
-                    onClick={() => {
-                      pendingItemsRef.current = [a];
-                      handlePrint();
-                    }}
-                    style={{ padding: "4px 8px", background: "#2563eb", color: "#ffffff", border: 0, borderRadius: 8 }}
-                  >
+                  <button onClick={() => handlePrintSingle(a)} style={{ padding: "4px 8px", background: "#2563eb", color: "#ffffff", border: 0, borderRadius: 8 }}>
                     Cetak QR
                   </button>
                 </td>
@@ -130,7 +122,7 @@ export default function DaftarApar() {
       </div>
 
       {/* Hidden printable area */}
-      <div style={{ position: "absolute", left: -9999 }} aria-hidden>
+      <div style={{ position: "absolute", left: -9999, top: -9999 }} aria-hidden>
         <div ref={printRef}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16, padding: 16 }}>
             {printItems.map((a, idx) => (
