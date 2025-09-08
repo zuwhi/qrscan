@@ -11,16 +11,17 @@ export default function DaftarApar() {
   const [selected, setSelected] = useState([]); // array of nomor
   const [printItems, setPrintItems] = useState([]);
   const printRef = useRef(null);
-  const handlePrint = useReactToPrint({ content: () => printRef.current, documentTitle: "QR-APAR" });
+  const pendingItemsRef = useRef([]);
 
-  // Ensure printing runs after DOM updates by using an effect that watches printItems
-  useEffect(() => {
-    if (printItems && printItems.length > 0) {
-      // Defer to end of tick so ref content is rendered
-      const id = setTimeout(() => handlePrint(), 0);
-      return () => clearTimeout(id);
-    }
-  }, [printItems, handlePrint]);
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: "QR-APAR",
+    onBeforeGetContent: () =>
+      new Promise((resolve) => {
+        setPrintItems(pendingItemsRef.current);
+        setTimeout(resolve, 0);
+      }),
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -49,25 +50,26 @@ export default function DaftarApar() {
   }, [apars, query]);
 
   if (loading) return <div>Memuat...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (error) return <div style={{ color: "#ef4444" }}>{error}</div>;
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-      <h2 style={{ marginTop: 0 }}>Daftar APAR</h2>
-      <input placeholder="Cari nomor/lokasi/kondisi/tanggal" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, margin: "8px 0", width: "100%", maxWidth: 420 }} />
+      <h2 style={{ marginTop: 0, color: "#0b1220" }}>Daftar APAR</h2>
+      <input placeholder="Cari nomor/lokasi/kondisi/tanggal" value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, margin: "8px 0", width: "100%", maxWidth: 420, border: "1px solid #bfdbfe", borderRadius: 8 }} />
 
       <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "8px 0", flexWrap: "wrap" }}>
         <button
           onClick={() => {
             const items = apars.filter((a) => selected.includes(a.nomor));
             if (items.length === 0) return;
-            setPrintItems(items);
+            pendingItemsRef.current = items;
+            handlePrint();
           }}
-          style={{ padding: "6px 10px", background: "#111827", color: "#fff", border: 0, borderRadius: 6 }}
+          style={{ padding: "6px 10px", background: "#1d4ed8", color: "#ffffff", border: 0, borderRadius: 8 }}
         >
           Cetak QR Terpilih
         </button>
-        <button onClick={() => setSelected([])} style={{ padding: "6px 10px", background: "#e5e7eb", color: "#111827", border: 0, borderRadius: 6 }}>
+        <button onClick={() => setSelected([])} style={{ padding: "6px 10px", background: "#e5e7eb", color: "#0b1220", border: 0, borderRadius: 8 }}>
           Reset Pilihan
         </button>
         <div style={{ fontSize: 12, color: "#6b7280" }}>{selected.length} dipilih</div>
@@ -77,7 +79,7 @@ export default function DaftarApar() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>
                 <input
                   type="checkbox"
                   checked={selected.length > 0 && filtered.every((a) => selected.includes(a.nomor))}
@@ -87,17 +89,17 @@ export default function DaftarApar() {
                   }}
                 />
               </th>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Nomor</th>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Lokasi</th>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Kondisi</th>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Tanggal</th>
-              <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #e5e7eb" }}>Aksi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>Nomor</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>Lokasi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>Kondisi</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>Tanggal</th>
+              <th style={{ textAlign: "left", padding: 8, borderBottom: "2px solid #93c5fd", color: "#0b1220" }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((a, idx) => (
               <tr key={idx}>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb" }}>
                   <input
                     type="checkbox"
                     checked={selected.includes(a.nomor)}
@@ -106,16 +108,17 @@ export default function DaftarApar() {
                     }}
                   />
                 </td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.nomor}</td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.lokasi}</td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.kondisi}</td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>{a.tanggal}</td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.nomor}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.lokasi}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.kondisi}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb", color: "#0b1220" }}>{a.tanggal}</td>
+                <td style={{ padding: 8, borderBottom: "1px solid #e5e7eb" }}>
                   <button
                     onClick={() => {
-                      setPrintItems([a]);
+                      pendingItemsRef.current = [a];
+                      handlePrint();
                     }}
-                    style={{ padding: "4px 8px", background: "#2563eb", color: "#fff", border: 0, borderRadius: 6 }}
+                    style={{ padding: "4px 8px", background: "#2563eb", color: "#ffffff", border: 0, borderRadius: 8 }}
                   >
                     Cetak QR
                   </button>
@@ -131,12 +134,12 @@ export default function DaftarApar() {
         <div ref={printRef}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16, padding: 16 }}>
             {printItems.map((a, idx) => (
-              <div key={idx} style={{ border: "1px solid #ddd", padding: 12, textAlign: "center" }}>
-                <div style={{ fontWeight: "bold", marginBottom: 8 }}>{a.nomor}</div>
-                <div style={{ background: "#fff", padding: 8 }}>
+              <div key={idx} style={{ border: "1px solid #e5e7eb", padding: 12, textAlign: "center" }}>
+                <div style={{ fontWeight: "bold", marginBottom: 8, color: "#0b1220" }}>{a.nomor}</div>
+                <div style={{ background: "#ffffff", padding: 8 }}>
                   <QRCode value={String(a.nomor || "")} size={128} level="M" />
                 </div>
-                <div style={{ marginTop: 6, fontSize: 12 }}>{a.lokasi}</div>
+                <div style={{ marginTop: 6, fontSize: 12, color: "#0b1220" }}>{a.lokasi}</div>
               </div>
             ))}
           </div>

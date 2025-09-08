@@ -30,7 +30,6 @@ export default function ScanQR() {
     scannerRef.current = html5QrCode;
     const config = { fps: 10, qrbox: 250 };
 
-    // Prefer back camera by facingMode. Fallback: choose a device with 'back'/'rear' label, else first.
     html5QrCode
       .start(
         { facingMode: "environment" },
@@ -72,15 +71,15 @@ export default function ScanQR() {
   const cameraHeight = isMobile ? "360px" : "calc(100vh - 240px)";
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: 0 }}>
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: 0, color: "#0b1220" }}>
       <div style={{ display: "grid", gridTemplateColumns: gridColumns, gap: 24, alignItems: "stretch" }}>
         <div style={{ padding: isMobile ? 12 : 16 }}>
           <h2 style={{ margin: 0, fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>Scan QR</h2>
-          <p style={{ margin: "8px 0 16px", color: "#555" }}>Arahkan kamera ke QR APAR. Sistem akan otomatis membaca nomor.</p>
+          <p style={{ margin: "8px 0 16px", color: "#374151" }}>Arahkan kamera ke QR APAR. Sistem akan otomatis membaca nomor.</p>
           <div
             style={{
-              background: "#fff",
-              border: "1px solid #e5e7eb",
+              background: "#ffffff",
+              border: "1px solid #bfdbfe",
               borderRadius: 12,
               boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
               padding: isMobile ? 12 : 16,
@@ -91,10 +90,10 @@ export default function ScanQR() {
             }}
           >
             {cameraError ? (
-              <div style={{ color: "#b91c1c", background: "#fee2e2", padding: 12, borderRadius: 8 }}>{cameraError}</div>
+              <div style={{ color: "#ef4444", background: "#fee2e2", padding: 12, borderRadius: 8 }}>{cameraError}</div>
             ) : (
               <div ref={qrRef} style={{ width: "100%", height: "100%" }}>
-                <div id="qr-reader" style={{ width: "100%", height: "100%", borderRadius: 12, overflow: "hidden", background: "#0f172a" }} />
+                <div id="qr-reader" style={{ width: "100%", height: "100%", borderRadius: 12, overflow: "hidden", background: "#0b1220" }} />
               </div>
             )}
           </div>
@@ -111,42 +110,42 @@ export default function ScanQR() {
           >
             <div
               style={{
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
+                background: "#ffffff",
+                border: "1px solid #e5e7eb",
                 borderRadius: 10,
                 padding: 12,
               }}
             >
-              <div style={{ fontSize: 14, color: "#64748b" }}>Hasil</div>
+              <div style={{ fontSize: 14, color: "#6b7280" }}>Hasil</div>
               <div style={{ fontSize: 18, fontWeight: 600 }}>{result || "-"}</div>
             </div>
 
             {matched ? (
               <div
                 style={{
-                  background: "#ecfeff",
-                  border: "1px solid #a5f3fc",
+                  background: "#ffffff",
+                  border: "1px solid #bfdbfe",
                   borderRadius: 10,
                   padding: 12,
                 }}
               >
-                <div style={{ fontSize: 14, color: "#0e7490", marginBottom: 6 }}>Detail APAR</div>
+                <div style={{ fontSize: 14, color: "#1d4ed8", marginBottom: 6 }}>Detail APAR</div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "120px 1fr", rowGap: 6, columnGap: 12 }}>
-                  <div style={{ color: "#334155" }}>Nomor</div>
+                  <div style={{ color: "#0b1220" }}>Nomor</div>
                   <div style={{ fontWeight: 600 }}>{matched.nomor}</div>
-                  <div style={{ color: "#334155" }}>Lokasi</div>
+                  <div style={{ color: "#0b1220" }}>Lokasi</div>
                   <div style={{ fontWeight: 600 }}>{matched.lokasi}</div>
-                  <div style={{ color: "#334155" }}>Kondisi</div>
+                  <div style={{ color: "#0b1220" }}>Kondisi</div>
                   <div style={{ fontWeight: 600 }}>{matched.kondisi}</div>
-                  <div style={{ color: "#334155" }}>Tanggal</div>
+                  <div style={{ color: "#0b1220" }}>Tanggal</div>
                   <div style={{ fontWeight: 600 }}>{matched.tanggal}</div>
                 </div>
               </div>
             ) : result ? (
-              <div style={{ color: "#b45309", background: "#fffbeb", border: "1px solid #facc15", borderRadius: 10, padding: 12 }}>APAR tidak ditemukan untuk nomor tersebut.</div>
+              <div style={{ color: "#0b1220", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 10, padding: 12 }}>APAR tidak ditemukan untuk nomor tersebut.</div>
             ) : null}
           </div>
-          {error && <div style={{ color: "#b91c1c", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 10, padding: 12, marginTop: 12 }}>{error}</div>}
+          {error && <div style={{ color: "#ef4444", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 10, padding: 12, marginTop: 12 }}>{error}</div>}
         </div>
       </div>
     </div>

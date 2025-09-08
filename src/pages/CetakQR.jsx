@@ -7,12 +7,12 @@ function QRCards({ items }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
       {items.map((a, idx) => (
-        <div key={idx} style={{ border: "1px solid #ddd", padding: 12, textAlign: "center" }}>
-          <div style={{ fontWeight: "bold", marginBottom: 8 }}>{a.nomor}</div>
-          <div style={{ background: "#fff", padding: 8 }}>
+        <div key={idx} style={{ border: "1px solid #e5e7eb", padding: 12, textAlign: "center", background: "#ffffff" }}>
+          <div style={{ fontWeight: "bold", marginBottom: 8, color: "#0b1220" }}>{a.nomor}</div>
+          <div style={{ background: "#ffffff", padding: 8 }}>
             <QRCode value={String(a.nomor || "")} size={128} level="M" />
           </div>
-          <div style={{ marginTop: 6, fontSize: 12 }}>{a.lokasi}</div>
+          <div style={{ marginTop: 6, fontSize: 12, color: "#0b1220" }}>{a.lokasi}</div>
         </div>
       ))}
     </div>
@@ -43,10 +43,10 @@ export default function CetakQR() {
   }, [apars, query]);
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-      <h2>Cetak QR</h2>
+    <div style={{ maxWidth: 1200, margin: "0 auto", color: "#0b1220" }}>
+      <h2 style={{ marginTop: 0 }}>Cetak QR</h2>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", margin: "8px 0" }}>
-        <input placeholder="Cari..." value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, width: 240, maxWidth: "100%" }} />
+        <input placeholder="Cari..." value={query} onChange={(e) => setQuery(e.target.value)} style={{ padding: 8, width: 240, maxWidth: "100%", border: "1px solid #bfdbfe", borderRadius: 8 }} />
       </div>
 
       <div ref={gridRef}>
@@ -54,12 +54,12 @@ export default function CetakQR() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-        <button onClick={handlePrint} style={{ padding: "10px 14px", background: "#111827", color: "#fff", border: 0, borderRadius: 8 }}>
+        <button onClick={handlePrint} style={{ padding: "10px 14px", background: "#1d4ed8", color: "#ffffff", border: 0, borderRadius: 8 }}>
           Cetak
         </button>
       </div>
 
-      {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+      {error && <div style={{ color: "#ef4444", marginTop: 8 }}>{error}</div>}
     </div>
   );
 }
