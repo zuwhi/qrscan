@@ -13,6 +13,15 @@ export default function DaftarApar() {
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({ content: () => printRef.current, documentTitle: "QR-APAR" });
 
+  // Ensure printing runs after DOM updates by using an effect that watches printItems
+  useEffect(() => {
+    if (printItems && printItems.length > 0) {
+      // Defer to end of tick so ref content is rendered
+      const id = setTimeout(() => handlePrint(), 0);
+      return () => clearTimeout(id);
+    }
+  }, [printItems, handlePrint]);
+
   useEffect(() => {
     let mounted = true;
     fetchAparList()
@@ -53,7 +62,6 @@ export default function DaftarApar() {
             const items = apars.filter((a) => selected.includes(a.nomor));
             if (items.length === 0) return;
             setPrintItems(items);
-            setTimeout(() => handlePrint(), 0);
           }}
           style={{ padding: "6px 10px", background: "#111827", color: "#fff", border: 0, borderRadius: 6 }}
         >
@@ -106,7 +114,6 @@ export default function DaftarApar() {
                   <button
                     onClick={() => {
                       setPrintItems([a]);
-                      setTimeout(() => handlePrint(), 0);
                     }}
                     style={{ padding: "4px 8px", background: "#2563eb", color: "#fff", border: 0, borderRadius: 6 }}
                   >
@@ -120,7 +127,7 @@ export default function DaftarApar() {
       </div>
 
       {/* Hidden printable area */}
-      <div style={{ position: "absolute", left: -9999 }}>
+      <div style={{ position: "absolute", left: -9999 }} aria-hidden>
         <div ref={printRef}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16, padding: 16 }}>
             {printItems.map((a, idx) => (

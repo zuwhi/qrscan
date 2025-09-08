@@ -24,7 +24,7 @@ export default function App() {
           boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
         }}
       >
-        <h1 style={{ marginRight: "auto", fontSize: 20, color: "#1f2937" }}>APAR Manager</h1>
+        <h1 style={{ marginRight: "auto", fontSize: 20, color: "#1f2937" }}>GA Express</h1>
         <nav style={{ display: "flex", gap: 12 }}>
           <Link style={{ textDecoration: "none", color: "#374151" }} to="/">
             Daftar APAR
