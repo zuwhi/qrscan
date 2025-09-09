@@ -23,7 +23,7 @@ export default function App() {
             gap: 12,
           }}
         >
-          <h1 style={{ margin: 0, marginRight: "auto", fontSize: 20 }}>GA Express</h1>
+          <h1 style={{ margin: 0, marginRight: "auto", fontSize: 20 }}>GA APAR SCAN</h1>
           <nav style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Link
               to="/"
