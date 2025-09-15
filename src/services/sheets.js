@@ -34,44 +34,44 @@ export async function fetchAparList() {
 }
 
 export async function updateAparData(nomor, updateData) {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-  const spreadsheetId = import.meta.env.VITE_SHEETS_ID;
-  const range = import.meta.env.VITE_SHEETS_RANGE || "Sheet1!A:D";
+  const appsScriptUrl = import.meta.env.VITE_APPS_SCRIPT_URL;
 
-  if (!apiKey || !spreadsheetId) {
-    throw new Error("Missing Google Sheets config. Please set VITE_GOOGLE_API_KEY and VITE_SHEETS_ID");
+  if (!appsScriptUrl) {
+    throw new Error("Missing Google Apps Script URL. Please set VITE_APPS_SCRIPT_URL in your environment variables.");
   }
 
-  // First, get all data to find the row number
-  const allData = await fetchAparList();
-  const aparIndex = allData.findIndex((apar) => String(apar.nomor).trim() === String(nomor).trim());
+  // Prepare the data to send to Apps Script
+  const requestData = {
+    nomor: nomor,
+    lokasi: updateData.lokasi || "",
+    kondisi: updateData.kondisi || "",
+    tanggal: updateData.tanggal || "",
+  };
 
-  if (aparIndex === -1) {
-    throw new Error("APAR tidak ditemukan");
+  try {
+    const res = await fetch(appsScriptUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error: ${res.status}`);
+    }
+
+    const result = await res.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Gagal mengupdate data");
+    }
+
+    return result;
+  } catch (error) {
+    if (error.message.includes("HTTP Error")) {
+      throw new Error(`Gagal mengupdate data: ${error.message}`);
+    }
+    throw error;
   }
-
-  // Row number in the sheet (1-based, +2 because we skip header and arrays are 0-based)
-  const rowNumber = aparIndex + 2;
-
-  // Prepare the update data
-  const values = [[updateData.nomor || nomor, updateData.lokasi || "", updateData.kondisi || "", updateData.tanggal || ""]];
-
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/Sheet1!A${rowNumber}:D${rowNumber}?valueInputOption=RAW&key=${encodeURIComponent(apiKey)}`;
-
-  const res = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      values: values,
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to update Google Sheets: ${res.status} ${text}`);
-  }
-
-  return await res.json();
 }
