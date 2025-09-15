@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { fetchAparList } from "../services/sheets";
+import { fetchAparList, updateAparData } from "../services/sheets";
 
 export default function ScanQR() {
   const [apars, setApars] = useState([]);
@@ -98,13 +98,23 @@ export default function ScanQR() {
 
     setIsUpdating(true);
     try {
-      // Simulasi update data - Anda bisa mengganti ini dengan API call yang sebenarnya
+      // Update data ke Google Sheets
+      await updateAparData(matched.nomor, updateData);
+
+      // Update data lokal
       const updatedApars = apars.map((apar) => (apar.nomor === matched.nomor ? { ...apar, ...updateData } : apar));
       setApars(updatedApars);
       setShowUpdateForm(false);
       setError("");
-    } catch {
-      setError("Gagal mengupdate data APAR");
+
+      // Tampilkan alert sukses
+      alert("Data APAR berhasil diupdate!");
+    } catch (err) {
+      const errorMessage = err.message || "Gagal mengupdate data APAR";
+      setError(errorMessage);
+
+      // Tampilkan alert error
+      alert(`Error: ${errorMessage}`);
     } finally {
       setIsUpdating(false);
     }
