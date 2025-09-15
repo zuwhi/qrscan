@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { fetchAparList, updateAparData } from "../services/sheets";
+import TestAppsScript from "../components/TestAppsScript";
 
 export default function ScanQR() {
   const [apars, setApars] = useState([]);
@@ -255,6 +256,9 @@ export default function ScanQR() {
             ) : null)}
 
           {error && <div style={{ marginTop: 12, color: "#ef4444", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 10, padding: 12 }}>{error}</div>}
+
+          {/* Debug component - remove in production */}
+          <TestAppsScript />
         </div>
       </div>
 

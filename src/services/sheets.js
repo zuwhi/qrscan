@@ -40,6 +40,11 @@ export async function updateAparData(nomor, updateData) {
     throw new Error("Missing Google Apps Script URL. Please set VITE_APPS_SCRIPT_URL in your environment variables.");
   }
 
+  // Validate Apps Script URL format
+  if (!appsScriptUrl.includes("script.google.com")) {
+    throw new Error("Invalid Apps Script URL format. URL should contain 'script.google.com'");
+  }
+
   // Prepare the data to send to Apps Script
   const requestData = {
     nomor: nomor,
@@ -48,6 +53,9 @@ export async function updateAparData(nomor, updateData) {
     tanggal: updateData.tanggal || "",
   };
 
+  console.log("Sending update request to:", appsScriptUrl);
+  console.log("Request data:", requestData);
+
   try {
     const res = await fetch(appsScriptUrl, {
       method: "POST",
@@ -55,13 +63,20 @@ export async function updateAparData(nomor, updateData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
+      mode: "cors", // Explicitly set CORS mode
     });
 
+    console.log("Response status:", res.status);
+    console.log("Response headers:", res.headers);
+
     if (!res.ok) {
-      throw new Error(`HTTP Error: ${res.status}`);
+      const errorText = await res.text();
+      console.error("Error response:", errorText);
+      throw new Error(`HTTP Error: ${res.status} - ${errorText}`);
     }
 
     const result = await res.json();
+    console.log("Response data:", result);
 
     if (!result.success) {
       throw new Error(result.error || "Gagal mengupdate data");
@@ -69,9 +84,16 @@ export async function updateAparData(nomor, updateData) {
 
     return result;
   } catch (error) {
+    console.error("Update error:", error);
+
+    if (error.name === "TypeError" && error.message.includes("fetch")) {
+      throw new Error("Gagal menghubungi server. Periksa URL Apps Script dan koneksi internet.");
+    }
+
     if (error.message.includes("HTTP Error")) {
       throw new Error(`Gagal mengupdate data: ${error.message}`);
     }
+
     throw error;
   }
 }
