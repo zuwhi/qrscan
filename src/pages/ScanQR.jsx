@@ -9,6 +9,13 @@ export default function ScanQR() {
   const [cameraError, setCameraError] = useState("");
   const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth < 900 : true);
   const [showResult, setShowResult] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [updateData, setUpdateData] = useState({
+    lokasi: "",
+    kondisi: "",
+    tanggal: "",
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
   const qrRef = useRef(null);
   const scannerRef = useRef(null);
 
@@ -73,6 +80,42 @@ export default function ScanQR() {
     const nomor = String(result).trim();
     return apars.find((a) => String(a.nomor).trim() === nomor) || null;
   }, [result, apars]);
+
+  const handleUpdateClick = () => {
+    if (matched) {
+      setUpdateData({
+        lokasi: matched.lokasi || "",
+        kondisi: matched.kondisi || "",
+        tanggal: matched.tanggal || "",
+      });
+      setShowUpdateForm(true);
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    if (!matched) return;
+
+    setIsUpdating(true);
+    try {
+      // Simulasi update data - Anda bisa mengganti ini dengan API call yang sebenarnya
+      const updatedApars = apars.map((apar) => (apar.nomor === matched.nomor ? { ...apar, ...updateData } : apar));
+      setApars(updatedApars);
+      setShowUpdateForm(false);
+      setError("");
+    } catch {
+      setError("Gagal mengupdate data APAR");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setUpdateData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#000000", color: "#ffffff", zIndex: 50 }}>
@@ -159,6 +202,24 @@ export default function ScanQR() {
                   <div>Tanggal</div>
                   <div style={{ fontWeight: 600 }}>{matched.tanggal}</div>
                 </div>
+                <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                  <button
+                    onClick={handleUpdateClick}
+                    style={{
+                      background: "#3b82f6",
+                      color: "#ffffff",
+                      border: 0,
+                      borderRadius: 6,
+                      padding: "8px 16px",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      flex: 1,
+                    }}
+                  >
+                    Update Data
+                  </button>
+                </div>
               </div>
             ) : result ? (
               <div style={{ marginTop: 12, color: "#0b1220", background: "#eff6ff", border: "1px solid #93c5fd", borderRadius: 10, padding: 12, position: "relative" }}>
@@ -186,6 +247,165 @@ export default function ScanQR() {
           {error && <div style={{ marginTop: 12, color: "#ef4444", background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 10, padding: 12 }}>{error}</div>}
         </div>
       </div>
+
+      {/* Update Form Modal */}
+      {showUpdateForm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 12,
+              padding: 24,
+              width: "100%",
+              maxWidth: 500,
+              maxHeight: "90vh",
+              overflow: "auto",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#0b1220" }}>Update Data APAR</h3>
+              <button
+                onClick={() => setShowUpdateForm(false)}
+                style={{
+                  background: "#ef4444",
+                  color: "#ffffff",
+                  border: 0,
+                  borderRadius: 4,
+                  padding: "6px 12px",
+                  fontSize: 14,
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateSubmit}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", marginBottom: 6, fontSize: 14, fontWeight: 600, color: "#374151" }}>Nomor APAR</label>
+                <input
+                  type="text"
+                  value={matched?.nomor || ""}
+                  disabled
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 6,
+                    fontSize: 14,
+                    background: "#f9fafb",
+                    color: "#6b7280",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", marginBottom: 6, fontSize: 14, fontWeight: 600, color: "#374151" }}>Lokasi</label>
+                <input
+                  type="text"
+                  value={updateData.lokasi}
+                  onChange={(e) => handleInputChange("lokasi", e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 6,
+                    fontSize: 14,
+                  }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", marginBottom: 6, fontSize: 14, fontWeight: 600, color: "#374151" }}>Kondisi</label>
+                <select
+                  value={updateData.kondisi}
+                  onChange={(e) => handleInputChange("kondisi", e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 6,
+                    fontSize: 14,
+                  }}
+                  required
+                >
+                  <option value="">Pilih kondisi</option>
+                  <option value="Baik">Baik</option>
+                  <option value="Rusak">Rusak</option>
+                  <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                  <option value="Habis">Habis</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: "block", marginBottom: 6, fontSize: 14, fontWeight: 600, color: "#374151" }}>Tanggal</label>
+                <input
+                  type="date"
+                  value={updateData.tanggal}
+                  onChange={(e) => handleInputChange("tanggal", e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 6,
+                    fontSize: 14,
+                  }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => setShowUpdateForm(false)}
+                  style={{
+                    flex: 1,
+                    padding: 12,
+                    border: "1px solid #d1d5db",
+                    borderRadius: 6,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    background: "#ffffff",
+                    color: "#374151",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  style={{
+                    flex: 1,
+                    padding: 12,
+                    border: 0,
+                    borderRadius: 6,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    background: isUpdating ? "#9ca3af" : "#3b82f6",
+                    color: "#ffffff",
+                    cursor: isUpdating ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isUpdating ? "Menyimpan..." : "Simpan"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
