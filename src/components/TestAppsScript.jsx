@@ -17,18 +17,31 @@ export default function TestAppsScript() {
       }
 
       setTestResult(`🔍 Testing URL: ${appsScriptUrl}\n`);
+      setTestResult((prev) => prev + `📋 Environment: ${import.meta.env.MODE}\n`);
 
       // Test GET request
+      setTestResult((prev) => prev + `\n🔍 Testing GET request...\n`);
       const getResponse = await fetch(appsScriptUrl, {
         method: "GET",
         mode: "cors",
       });
 
+      setTestResult((prev) => prev + `📊 GET Response Status: ${getResponse.status}\n`);
+      setTestResult((prev) => prev + `📊 GET Response Headers: ${JSON.stringify(Object.fromEntries(getResponse.headers.entries()))}\n`);
+
       if (getResponse.ok) {
         const getData = await getResponse.json();
         setTestResult((prev) => prev + `✅ GET Test: ${JSON.stringify(getData)}\n`);
+
+        // Check if response has new format
+        if (getData.success === true) {
+          setTestResult((prev) => prev + `✅ Apps Script sudah di-update dengan kode terbaru!\n`);
+        } else {
+          setTestResult((prev) => prev + `⚠️ Apps Script masih menggunakan kode lama. Perlu di-update!\n`);
+        }
       } else {
-        setTestResult((prev) => prev + `❌ GET Test failed: ${getResponse.status}\n`);
+        const errorText = await getResponse.text();
+        setTestResult((prev) => prev + `❌ GET Test failed: ${getResponse.status} - ${errorText}\n`);
       }
 
       // Test POST request
@@ -39,7 +52,8 @@ export default function TestAppsScript() {
         tanggal: "2024-01-01",
       };
 
-      setTestResult((prev) => prev + `🔍 Testing POST with data: ${JSON.stringify(testData)}\n`);
+      setTestResult((prev) => prev + `\n🔍 Testing POST request...\n`);
+      setTestResult((prev) => prev + `📤 POST Data: ${JSON.stringify(testData)}\n`);
 
       const postResponse = await fetch(appsScriptUrl, {
         method: "POST",
@@ -48,7 +62,11 @@ export default function TestAppsScript() {
         },
         body: JSON.stringify(testData),
         mode: "cors",
+        cache: "no-cache",
       });
+
+      setTestResult((prev) => prev + `📊 POST Response Status: ${postResponse.status}\n`);
+      setTestResult((prev) => prev + `📊 POST Response Headers: ${JSON.stringify(Object.fromEntries(postResponse.headers.entries()))}\n`);
 
       if (postResponse.ok) {
         const postData = await postResponse.json();
@@ -59,6 +77,8 @@ export default function TestAppsScript() {
       }
     } catch (error) {
       setTestResult((prev) => prev + `❌ Error: ${error.message}\n`);
+      setTestResult((prev) => prev + `❌ Error Type: ${error.name}\n`);
+      setTestResult((prev) => prev + `❌ Error Stack: ${error.stack}\n`);
     } finally {
       setIsLoading(false);
     }
