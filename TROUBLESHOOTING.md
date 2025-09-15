@@ -63,7 +63,7 @@
 Buka URL Apps Script di browser. Harus menampilkan:
 
 ```json
-{ "message": "APAR Update API is running" }
+cors{ "success": true, "message": "APAR Update API is running" }
 ```
 
 ### Test 2: Test dengan cURL
@@ -80,6 +80,40 @@ curl -X POST "YOUR_APPS_SCRIPT_URL" \
 2. Lihat tab Console
 3. Coba update data APAR
 4. Lihat log yang muncul
+
+### Test 4: Cek Network Tab
+
+1. Buka Developer Tools (F12)
+2. Lihat tab Network
+3. Coba update data APAR
+4. Lihat request POST yang dikirim
+5. Cek status code dan response
+
+## Fix untuk "Failed to Fetch" pada POST
+
+### Solusi 1: Update Apps Script
+
+1. Buka Google Apps Script
+2. Ganti kode dengan script terbaru dari `GOOGLE_APPS_SCRIPT_SETUP.md`
+3. **PENTING**: Ganti `YOUR_SPREADSHEET_ID_HERE` dengan ID spreadsheet yang benar
+4. Save script
+5. Deploy ulang:
+   - Deploy > Manage deployments
+   - Edit deployment
+   - Deploy
+
+### Solusi 2: Cek Spreadsheet ID
+
+1. Buka Google Sheets
+2. Copy ID dari URL: `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit`
+3. Pastikan ID benar di Apps Script
+
+### Solusi 3: Cek Permission Spreadsheet
+
+1. Buka Google Sheets
+2. Klik Share (tombol berbagi)
+3. Pastikan akun Google yang menjalankan Apps Script memiliki akses "Editor"
+4. Atau set "Anyone with the link" sebagai "Editor"
 
 ## Debug Steps
 

@@ -13,8 +13,17 @@ Ganti kode default dengan script berikut:
 ```javascript
 function doPost(e) {
   try {
+    // Set CORS headers
+    const response = ContentService.createTextOutput();
+
     // Parse request body
-    const data = JSON.parse(e.postData.contents);
+    let data;
+    try {
+      data = JSON.parse(e.postData.contents);
+    } catch (parseError) {
+      return createErrorResponse("Invalid JSON data");
+    }
+
     const { nomor, lokasi, kondisi, tanggal } = data;
 
     // ID Spreadsheet Anda (ganti dengan ID yang benar)
@@ -38,20 +47,44 @@ function doPost(e) {
     }
 
     if (rowToUpdate === -1) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: "APAR tidak ditemukan" })).setMimeType(ContentService.MimeType.JSON);
+      return createErrorResponse("APAR tidak ditemukan");
     }
 
     // Update data
     sheet.getRange(rowToUpdate, 1, 1, 4).setValues([[nomor, lokasi, kondisi, tanggal]]);
 
-    return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Data berhasil diupdate" })).setMimeType(ContentService.MimeType.JSON);
+    return createSuccessResponse("Data berhasil diupdate");
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() })).setMimeType(ContentService.MimeType.JSON);
+    return createErrorResponse(error.toString());
   }
 }
 
 function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({ message: "APAR Update API is running" })).setMimeType(ContentService.MimeType.JSON);
+  return createSuccessResponse("APAR Update API is running");
+}
+
+// Helper function untuk success response
+function createSuccessResponse(message) {
+  const response = ContentService.createTextOutput(
+    JSON.stringify({
+      success: true,
+      message: message,
+    })
+  );
+  response.setMimeType(ContentService.MimeType.JSON);
+  return response;
+}
+
+// Helper function untuk error response
+function createErrorResponse(error) {
+  const response = ContentService.createTextOutput(
+    JSON.stringify({
+      success: false,
+      error: error,
+    })
+  );
+  response.setMimeType(ContentService.MimeType.JSON);
+  return response;
 }
 ```
 

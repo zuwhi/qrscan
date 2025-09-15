@@ -63,7 +63,8 @@ export async function updateAparData(nomor, updateData) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
-      mode: "cors", // Explicitly set CORS mode
+      mode: "cors",
+      cache: "no-cache",
     });
 
     console.log("Response status:", res.status);
@@ -87,7 +88,7 @@ export async function updateAparData(nomor, updateData) {
     console.error("Update error:", error);
 
     if (error.name === "TypeError" && error.message.includes("fetch")) {
-      throw new Error("Gagal menghubungi server. Periksa URL Apps Script dan koneksi internet.");
+      throw new Error("Gagal menghubungi server. Periksa URL Apps Script dan koneksi internet. Pastikan Apps Script sudah di-deploy dengan benar.");
     }
 
     if (error.message.includes("HTTP Error")) {
